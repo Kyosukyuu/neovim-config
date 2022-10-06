@@ -38,7 +38,7 @@ local on_attach  = function(client, bufnr)
   buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
     
   -- disable formatting to let external LSP to format via null-ls
-  if client.name == 'tsserver' or client.name == 'jsonls' then                                                                          
+  if client.name == 'tsserver' or client.name == 'jsonls' or client.name == 'html' then 
     client.resolved_capabilities.document_formatting = false
     client.resolved_capabilities.document_range_formatting = false
   end
@@ -116,19 +116,19 @@ cmp.setup {
     end
   },
   sources = {
-    { name = 'nvim_lsp', 
-      entry_filter = function(entry, ctx)
-        -- filter out snippets
-        return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
-      end 
+    { name = 'nvim_lsp',
+      --entry_filter = function(entry, ctx)
+        ---- filter out snippets
+        --return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
+      --end 
     },
-    { name = 'luasnip' },
-    { name = 'buffer'},
-    { name = 'path' }
+    { name = 'luasnip', },
+    { name = 'buffer', },
+    { name = 'path', }
   },
 }
 
-require'cmp'.setup.cmdline(':', {
+cmp.setup.cmdline(':', {
   sources = cmp.config.sources({
     { name = 'path' }
   }, {
@@ -136,10 +136,24 @@ require'cmp'.setup.cmdline(':', {
     })
 })
 
-require'cmp'.setup.cmdline('/', {
+cmp.setup.cmdline('/', {
   sources = {
     { name = 'buffer' }
   }
+})
+
+cmp.setup.filetype({ 'scss', 'css' }, {
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp',
+      entry_filter = function(entry, ctx)
+        -- filter out snippets
+        return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
+      end 
+    },
+    { name = 'luasnip', },
+    { name = 'buffer', },
+    { name = 'path', }
+  })
 })
 
 saga.init_lsp_saga {
