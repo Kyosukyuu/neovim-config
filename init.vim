@@ -7,7 +7,8 @@ set modelines=0
 " LINE NUMBERS
 " adds numbered lines
 set number
-
+" set numbered lines relative to current line
+set relativenumber
 " show matching brackets
 set showmatch
 
