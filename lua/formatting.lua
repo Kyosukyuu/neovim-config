@@ -2,7 +2,7 @@ local null_ls = require('null-ls')
 
 -- setup prettier, opinionated formatter for js, ts, css, html, and more
 -- use prettierd for better performance
--- cli_options are active when :Prettier is called or there is no .prettierrc file
+-- cli_options are active when :Prettier is called
 require('prettier').setup({
   bin = 'prettierd',
   cli_options = {
@@ -35,24 +35,18 @@ null_ls.setup({
     null_ls.builtins.formatting.prettierd
   },
   on_attach = function(client, bufnr)
-  if client.resolved_capabilities.document_formatting then
-    -- vim.cmd("nnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.formatting_sync()<CR>")
-    -- vim.cmd("nnoremap <silent><buffer> <Leader>f :Prettier<CR>")
-
-    -- use vim.lsp.buf.formatting_sync() instead of vim.lsp.buf.formatting
-    -- to correctly save + format on a single write
-    vim.cmd("nnoremap <silent><buffer> <Leader>fx :lua vim.lsp.buf.formatting_sync()<CR>")
-
-    -- format on save
-    vim.cmd("autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting_sync()")
-    -- vim.cmd("autocmd BufWritePost <buffer> :Prettier")
-  end
-
-  if client.resolved_capabilities.document_range_formatting then
-    vim.cmd("xnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.range_formatting({})<CR>")
-  -- vim.cmd("xnoremap <silent><buffer> <Leader>f :Prettier<CR>")
-  end
-end,
+    if client.supports_method("textDocument/formatting") then
+      vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+      vim.api.nvim_create_autocmd("BufWritePre", {
+      group = augroup,
+      buffer = bufnr,
+      callback = function()
+        -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
+        vim.lsp.buf.formatting_sync()
+      end,
+      })
+    end
+  end,
 })
 
 -- autopair for mutiple characters
@@ -61,15 +55,17 @@ require('nvim-autopairs').setup({
 })
 
 -- treesitter-based syntax highlighting
--- autoclose and rename html tags with nvim-ts-autotag
+-- for renaming tags in tsx, make sure to do :TSInstall tsx
 local treesitter = require('nvim-treesitter.configs')
 treesitter.setup {
   highlight = {
     enable = true
   },
+  -- autoclose and rename html tags with nvim-ts-autotag
   autotag = {
     enable = true,
   },
+  -- avoid weird indent errors after creating new line
   indent = {
     enable = true
   }
