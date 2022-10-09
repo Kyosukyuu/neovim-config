@@ -53,10 +53,10 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
-      capabilities = capabilities,
-      flags = {
-        debounce_text_changes = 150,
-      }
+    capabilities = capabilities,
+    flags = {
+      debounce_text_changes = 150,
+    },
   }
 end
 
@@ -116,15 +116,10 @@ cmp.setup {
     end
   },
   sources = {
-    { name = 'nvim_lsp',
-      --entry_filter = function(entry, ctx)
-        ---- filter out snippets
-        --return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
-      --end 
-    },
-    { name = 'luasnip', },
-    { name = 'buffer', },
-    { name = 'path', }
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+    { name = 'buffer' },
+    { name = 'path' }
   },
 }
 
