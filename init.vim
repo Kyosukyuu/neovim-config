@@ -34,29 +34,22 @@ au FocusGained,BufEnter * :silent! !
 " TABS
 " converts tabs to whitespace
 set expandtab 
-
 " number of columns occupied by a tab
 set tabstop=2 
-
 " width for autoindents
 set shiftwidth=2
-
 " number of spaces the cursor moves to the right from a tab
 set softtabstop=2
-
 " new lines will autoindent to match the previous line
 set autoindent 
 
 " SEARCH
 " highlights search results
 set hlsearch
-
 " incremental search
 set incsearch
-
 " case insensitive
 set ignorecase
-
 " overrides case insensitivity if search has uppercase letters
 set smartcase
 
@@ -71,10 +64,10 @@ set laststatus=2 statusline=%F
 " disable temp files
 set noswapfile
 
-"set termguicolors
-"set t_Co=256
-
 syntax enable
+
+" PROVIDERS (CONSULT :checkhealth provider) 
+let g:python3_host_prog = 'C:\Users\KEVIN_ZHONG\AppData\Local\Programs\Python\Python310\python.exe'
 
 " PLUGINS
 filetype plugin on
@@ -142,19 +135,38 @@ Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
 call plug#end()
 
-colorscheme tokyonight
-
 lua << EOF
 require('lualine-theme')
 require('lsp-setup')
 require('telescope-setup')
 require('color-highlighter')
 require('formatting')
+require('tokyonight').setup({
+  style = 'storm',
+  terminal_colors = true
+})
 EOF
+
+" TERMINAL COLORSCHEME
+colorscheme tokyonight
+set termguicolors
+
+" SET TERMINAL TO USE POWERSHELL 
+" (MAKE SURE YOU HAVE POWERSHELL, NOT WINDOWS POWERSHELL!)
+set shell=pwsh.exe
+set shellxquote=
+let &shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command '
+let &shellquote   = ''
+let &shellpipe    = '| Out-File -Encoding UTF8 %s'
+let &shellredir   = '| Out-File -Encoding UTF8 %s'
 
 " MAPPINGS / RE-MAPPINGS
 " TERMINAL
+" escape from terminal
 tnoremap <leader><Esc> <C-\><C-n>
+" refresh / reload terminal
+nnoremap <leader>r <cmd>so %<cr>
+
 " TELESCOPE
 nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>
 nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
